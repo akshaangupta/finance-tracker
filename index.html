@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" id="meta-theme-color" content="#0b1120" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RupeeTrack" />
+  <title>RupeeTrack — Personal Finance Tracker</title>
+
+  <!-- App Icons for iPhone Home Screen, Desktop & Browser Tab -->
+  <link id="app-icon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%230b1120'/%3E%3Ctext x='64' y='84' text-anchor='middle' font-family='system-ui,sans-serif' font-size='68' font-weight='700' fill='%2310b981'%3E%E2%82%B9%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Crect width='128' height='128' rx='28' fill='%230b1120'/%3E%3Ctext x='64' y='84' text-anchor='middle' font-family='system-ui,sans-serif' font-size='68' font-weight='700' fill='%2310b981'%3E%E2%82%B9%3C/text%3E%3C/svg%3E" />
+  <link id="pwa-manifest" rel="manifest" href="./manifest.json" />
+
+  <style>
+    /* =========================================================
+       1. THEME TOKENS (DARK DEFAULT + LIGHT)
+       ========================================================= */
+    :root,
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #263244;
+      --primary: #10b981;
+      --primary-text: #042f2e;
+      --primary-hover: #34d399;
+      --accent: #10b981;
+      --accent-soft: rgba(16, 185, 129, 0.16);
+      --accent-text: #6ee7b7;
+      --warn: #f59e0b;
+      --warn-soft: rgba(245, 158, 11, 0.16);
+      --warn-text: #fcd34d;
+      --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.16);
+      --danger-text: #fca5a5;
+      --info: #3b82f6;
+      --info-soft: rgba(59, 130, 246, 0.16);
+      --info-text: #93c5fd;
+      --cash-hero-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --cash-hero-border: #334155;
+      --badge-cash-bg: rgba(245, 158, 11, 0.18);
+      --badge-cash-text: #fcd34d;
+      --badge-digital-bg: rgba(99, 102, 241, 0.2);
+      --badge-digital-text: #c7d2fe;
+      --badge-other-bg: rgba(236, 72, 153, 0.18);
+      --badge-other-text: #f9a8d4;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --nav-bg: rgba(17, 24, 39, 0.94);
+      --header-bg: rgba(11, 17, 32, 0.92);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #e2e8f0;
+      --primary: #0f172a;
+      --primary-text: #ffffff;
+      --primary-hover: #1e293b;
+      --accent: #059669;
+      --accent-soft: #d1fae5;
+      --accent-text: #065f46;
+      --warn: #d97706;
+      --warn-soft: #fef3c7;
+      --warn-text: #92400e;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --danger-text: #991b1b;
+      --info: #2563eb;
+      --info-soft: #dbeafe;
+      --info-text: #1e40af;
+      --cash-hero-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --cash-hero-border: transparent;
+      --badge-cash-bg: #fef3c7;
+      --badge-cash-text: #92400e;
+      --badge-digital-bg: #e0e7ff;
+      --badge-digital-text: #3730a3;
+      --badge-other-bg: #fce7f3;
+      --badge-other-text: #9d174d;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --nav-bg: rgba(255, 255, 255, 0.95);
+      --header-bg: rgba(248, 250, 252, 0.92);
+    }
+
+    :root {
+      --radius: 16px;
+      --radius-sm: 10px;
+      --nav-height: 68px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* =========================================================
+       2. APP SHELL & RESPONSIVE DESKTOP / MOBILE LAYOUT
+       ========================================================= */
+    .app-shell {
+      max-width: 920px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+      padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 28px);
+    }
+
+    /* Sticky Top Bar with Safe Area Inset */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      background: var(--header-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #10b981;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Buttons (Large tap targets >= 44px for mobile) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 11px 16px;
+      min-height: 44px;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, background-color 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--primary-text);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #042f2e;
+    }
+
+    .btn-secondary {
+      background: var(--surface-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .btn-sm {
+      padding: 8px 13px;
+      min-height: 38px;
+      font-size: 13.5px;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .view-section {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .view-section.active {
+      display: flex;
+    }
+
+    /* Desktop 2-column dashboard grid */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .dash-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: start;
+      }
+      .dash-span-full {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Banners (Sample & 7-day Backup Reminder) */
+    .banner {
+      border-radius: var(--radius-sm);
+      padding: 11px 13px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .banner-info {
+      background: var(--info-soft);
+      color: var(--info-text);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    .banner-warn {
+      background: var(--warn-soft);
+      color: var(--warn-text);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    /* Cash Hero Card */
+    .cash-hero {
+      background: var(--cash-hero-bg);
+      color: #f8fafc;
+      border: 1px solid var(--cash-hero-border);
+    }
+
+    .cash-hero .card-title {
+      color: #94a3b8;
+    }
+
+    .cash-amount {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 2px 0 14px;
+      color: #ffffff;
+    }
+
+    .cash-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .cash-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: var(--radius-sm);
+      padding: 10px 8px;
+      min-height: 44px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      font-family: inherit;
+    }
+
+    .cash-btn:active {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    /* Budget Progress */
+    .budget-numbers {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .budget-spent {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .budget-limit {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 12px;
+      background: var(--surface-alt);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+
+    .budget-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .meta-box {
+      background: var(--surface-alt);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .meta-value {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .paid-others-line {
+      margin-top: 10px;
+      padding: 9px 11px;
+      background: var(--surface-alt);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* Guardrail Alerts */
+    .alert {
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .alert-warn {
+      background: var(--warn-soft);
+      color: var(--warn-text);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .alert-danger {
+      background: var(--danger-soft);
+      color: var(--danger-text);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .alert-ok {
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    /* Transaction List */
+    .tx-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tx-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .tx-left {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .tx-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--surface-alt);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .tx-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .tx-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tx-cat {
+      font-weight: 600;
+      font-size: 14.5px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-cash {
+      background: var(--badge-cash-bg);
+      color: var(--badge-cash-text);
+    }
+
+    .badge-digital {
+      background: var(--badge-digital-bg);
+      color: var(--badge-digital-text);
+    }
+
+    .badge-other {
+      background: var(--badge-other-bg);
+      color: var(--badge-other-text);
+    }
+
+    .badge-settled {
+      background: var(--accent-soft);
+      color: var(--accent-text);
+    }
+
+    .tx-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .tx-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .tx-amount {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .tx-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      min-height: 32px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .icon-btn:hover {
+      color: var(--text);
+    }
+
+    .icon-btn.del:hover {
+      background: var(--danger-soft);
+      color: var(--danger-text);
+      border-color: transparent;
+    }
+
+    /* Inputs & Filters (>=16px font-size prevents iOS Safari zoom!) */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .filter-row-full {
+      grid-column: 1 / -1;
+    }
+
+    .input, .select {
+      width: 100%;
+      padding: 11px 12px;
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-family: inherit;
+      background: var(--surface-alt);
+      color: var(--text);
+    }
+
+    .input:focus, .select:focus {
+      outline: 2px solid var(--primary);
+      outline-offset: -1px;
+    }
+
+    .quick-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      padding: 8px 13px;
+      min-height: 38px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .pill.active {
+      background: var(--primary);
+      color: var(--primary-text);
+      border-color: var(--primary);
+    }
+
+    /* Insights & Suggestions */
+    .insight-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .insight-stat:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-card {
+      background: var(--surface-alt);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 13.5px;
+      margin-bottom: 8px;
+    }
+
+    .suggestion-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .flag-card {
+      background: var(--warn-soft);
+      border-left: 4px solid var(--warn);
+      border-radius: 8px;
+      padding: 11px 12px;
+      font-size: 13.5px;
+      color: var(--warn-text);
+      margin-bottom: 8px;
+    }
+
+    /* Toggle Switch Row */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 0;
+    }
+
+    .switch-input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Bottom Navigation (5 tabs with safe area) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 920px;
+      height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      z-index: 30;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .nav-item {
+      border: none;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      min-height: 48px;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.72);
+      z-index: 50;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    @media (min-width: 560px) {
+      .modal-backdrop {
+        align-items: center;
+        padding: 16px;
+      }
+    }
+
+    .modal-sheet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    @media (min-width: 560px) {
+      .modal-sheet {
+        border-radius: 20px;
+        padding-bottom: 24px;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 20px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .amount-input {
+      font-size: 26px;
+      font-weight: 800;
+      padding: 12px 14px;
+    }
+
+    .cat-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .cat-chip {
+      padding: 9px 13px;
+      min-height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .cat-chip.selected {
+      background: var(--primary);
+      color: var(--primary-text);
+      border-color: var(--primary);
+    }
+
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 14px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--primary);
+      color: var(--primary-text);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 60;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .setup-steps {
+      padding-left: 18px;
+      margin: 8px 0 0;
+      font-size: 13.5px;
+      color: var(--text);
+    }
+
+    .setup-steps li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sticky Top Bar (Always-visible Add Expense on mobile & desktop) -->
+    <header class="top-bar">
+      <div class="brand">
+        <div class="brand-logo">₹</div>
+        <div>
+          <div class="brand-title">RupeeTrack</div>
+          <div class="brand-sub" id="header-month-label">Personal Finance</div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="btn-quick-add">+ Add Expense</button>
+    </header>
+
+    <main class="main-content">
+      <!-- Sample Data Banner -->
+      <div class="banner banner-info" id="sample-banner" style="display: none;">
+        <span>Viewing sample entries to preview alerts, insights &amp; owed tracking.</span>
+        <button class="btn btn-secondary btn-sm" id="btn-banner-clear">Clear</button>
+      </div>
+
+      <!-- 7-Day Safari / Browser Backup Reminder Banner -->
+      <div class="banner banner-warn" id="backup-banner" style="display: none;">
+        <span>⚠️ It's been over 7 days since your last backup. Safari can clear unused site data—export a copy.</span>
+        <button class="btn btn-secondary btn-sm" id="btn-banner-backup">Export Now</button>
+      </div>
+
+      <!-- =====================================================
+           VIEW 1: DASHBOARD
+           ===================================================== -->
+      <section id="view-dashboard" class="view-section active">
+        <div class="dash-grid">
+          <!-- Cash on Hand Card -->
+          <div class="card cash-hero">
+            <div class="card-header">
+              <span class="card-title">Cash on Hand</span>
+              <span style="font-size: 12px; color: #94a3b8;" id="cash-last-action">Wallet balance</span>
+            </div>
+            <div class="cash-amount" id="dash-cash-balance">₹0</div>
+            <div class="cash-actions">
+              <button class="cash-btn" id="btn-cash-spend">- Cash Spend</button>
+              <button class="cash-btn" id="btn-cash-withdraw">+ Withdraw</button>
+              <button class="cash-btn" id="btn-cash-set">Set Balance</button>
+            </div>
+          </div>
+
+          <!-- Monthly Budget & Guardrail Card -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title" id="budget-card-title">This Month's Budget</span>
+              <button class="icon-btn" id="btn-edit-limit-inline">Edit Limit</button>
+            </div>
+            <div class="budget-numbers">
+              <span class="budget-spent" id="dash-month-spent">₹0</span>
+              <span class="budget-limit" id="dash-month-limit">of ₹15,000</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="dash-progress-fill" style="width: 0%;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 12.5px; color: var(--text-muted);">
+              <span id="dash-pct-used">0% used</span>
+              <span id="dash-days-left">0 days left</span>
+            </div>
+
+            <div class="budget-meta-grid">
+              <div class="meta-box">
+                <div class="meta-label">Remaining Budget</div>
+                <div class="meta-value" id="dash-remaining">₹0</div>
+              </div>
+              <div class="meta-box">
+                <div class="meta-label">Safe Daily Spend</div>
+                <div class="meta-value" id="dash-daily-safe">₹0/day</div>
+              </div>
+            </div>
+
+            <div class="paid-others-line" id="dash-paid-others" style="display: none;"></div>
+            <div id="dash-alerts"></div>
+          </div>
+
+          <!-- Latest Transactions Card -->
+          <div class="card dash-span-full">
+            <div class="card-header">
+              <span class="card-title">Latest Expenses</span>
+              <button class="icon-btn" id="btn-view-all-tx">See All →</button>
+            </div>
+            <div class="tx-list" id="dash-recent-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 2: ALL EXPENSES (WITH FILTERS)
+           ===================================================== -->
+      <section id="view-expenses" class="view-section">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Filter Expenses</span>
+            <button class="icon-btn" id="btn-reset-filters">Reset</button>
+          </div>
+          <div class="quick-pills" style="margin-bottom: 10px;">
+            <button class="pill active" data-range="this_month">This Month</button>
+            <button class="pill" data-range="last_month">Last Month</button>
+            <button class="pill" data-range="all">All Time</button>
+          </div>
+          <div class="filter-grid">
+            <div>
+              <label class="form-label" for="filter-from">From</label>
+              <input type="date" id="filter-from" class="input" />
+            </div>
+            <div>
+              <label class="form-label" for="filter-to">To</label>
+              <input type="date" id="filter-to" class="input" />
+            </div>
+            <div class="filter-row-full">
+              <label class="form-label" for="filter-category">Category</label>
+              <select id="filter-category" class="select">
+                <option value="All">All Categories</option>
+              </select>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 13.5px; color: var(--text-muted); padding-top: 4px;">
+            <span id="filter-count">0 entries</span>
+            <strong id="filter-total" style="color: var(--text);">Total: ₹0</strong>
+          </div>
+        </div>
+
+        <div class="tx-list" id="all-expenses-list"></div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 3: OWED / SETTLED (PAID BY SOMEONE ELSE)
+           ===================================================== -->
+      <section id="view-owed" class="view-section">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Still Owed by Person</span>
+          </div>
+          <div id="owed-totals-body"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Paid by Someone Else</span>
+            <div class="quick-pills">
+              <button class="pill active" data-owed-filter="unsettled">Owed</button>
+              <button class="pill" data-owed-filter="all">All</button>
+            </div>
+          </div>
+          <div class="tx-list" id="owed-list"></div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 4: INSIGHTS & ANALYSIS
+           ===================================================== -->
+      <section id="view-insights" class="view-section">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Monthly Summary</span>
+          </div>
+          <div id="insight-summary-body"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top 3 Categories</span>
+          </div>
+          <div id="insight-top-cats"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Pattern Alerts</span>
+          </div>
+          <div id="insight-flags"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Practical Suggestions</span>
+          </div>
+          <div id="insight-suggestions"></div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           VIEW 5: SETTINGS, THEME, BACKUP & INSTALL
+           ===================================================== -->
+      <section id="view-settings" class="view-section">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Appearance</span>
+          </div>
+          <div class="quick-pills" id="theme-pills">
+            <button class="pill" data-theme-choice="dark">Dark (Default)</button>
+            <button class="pill" data-theme-choice="light">Light</button>
+            <button class="pill" data-theme-choice="system">Follow System</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Monthly Budget Limit</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="setting-budget-limit">Spending Limit (₹)</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="number" inputmode="numeric" id="setting-budget-limit" class="input" min="100" step="100" />
+              <button class="btn btn-primary" id="btn-save-limit">Save</button>
+            </div>
+          </div>
+          <label class="switch-row" for="setting-count-others" style="cursor: pointer;">
+            <span style="font-size: 13.5px;">Count "Paid by someone else" toward my ₹15,000 limit</span>
+            <input type="checkbox" id="setting-count-others" class="switch-input" />
+          </label>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Backup &amp; Sync (Export / Import)</span>
+          </div>
+          <p style="font-size: 12.5px; color: var(--accent-text); margin: 0 0 8px; font-weight: 600;" id="storage-status-label">Storage: Saving to IndexedDB + localStorage...</p>
+          <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 10px;" id="last-backup-label">
+            All data is stored locally in this browser. Export JSON (recommended for full sync between iPhone &amp; computer) or CSV.
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <button class="btn btn-secondary btn-full" id="btn-export-json">Export JSON</button>
+            <button class="btn btn-secondary btn-full" id="btn-export-csv">Export CSV</button>
+          </div>
+          <label class="btn btn-primary btn-full" style="cursor: pointer;">
+            Import JSON or CSV Backup
+            <input type="file" id="input-import-file" accept=".json,.csv,application/json,text/csv" style="display: none;" />
+          </label>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Install as App</span>
+          </div>
+          <ol class="setup-steps">
+            <li><strong>iPhone (Safari):</strong> Open your hosted URL in Safari, tap <strong>Share</strong>, then tap <strong>Add to Home Screen</strong>.</li>
+            <li><strong>Computer (Chrome / Edge):</strong> Open your hosted URL and click the <strong>Install</strong> icon in the address bar.</li>
+          </ol>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Data Management</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-full" id="btn-load-sample">Load Sample Data</button>
+            <button class="btn btn-danger btn-full" id="btn-clear-all">Clear All Data</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Navigation (5 Tabs) -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <span class="nav-icon">🏠</span>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-view="expenses">
+        <span class="nav-icon">🧾</span>
+        <span>Expenses</span>
+      </button>
+      <button class="nav-item" data-view="owed">
+        <span class="nav-icon">🤝</span>
+        <span>Owed</span>
+      </button>
+      <button class="nav-item" data-view="insights">
+        <span class="nav-icon">📊</span>
+        <span>Insights</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- =========================================================
+       MODAL 1: ADD / EDIT EXPENSE (3-Tap Quick Add)
+       ========================================================= -->
+  <div class="modal-backdrop" id="modal-expense">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <span class="modal-title" id="expense-modal-title">Add Expense</span>
+        <button class="close-btn" data-close="modal-expense">×</button>
+      </div>
+      <form id="form-expense">
+        <input type="hidden" id="exp-id" />
+        <div class="form-group">
+          <label class="form-label" for="exp-amount">Amount (₹)</label>
+          <input type="number" inputmode="decimal" step="any" min="1" id="exp-amount" class="input amount-input" placeholder="0" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <div class="cat-grid" id="exp-cat-chips"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Paid By</label>
+          <div class="toggle-row">
+            <button type="button" class="pill active" id="paidby-me" data-paidby="me">Me</button>
+            <button type="button" class="pill" id="paidby-other" data-paidby="other">Someone else</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="payer-name-group" style="display: none;">
+          <label class="form-label" for="exp-payer-name">Who paid? (Cash on hand won't be reduced)</label>
+          <input type="text" id="exp-payer-name" class="input" placeholder="e.g., Dad" maxlength="40" />
+          <div class="quick-pills" id="saved-payers-list" style="margin-top: 8px;"></div>
+        </div>
+
+        <div class="form-group" id="pay-method-group">
+          <label class="form-label">Payment Method</label>
+          <div class="toggle-row">
+            <button type="button" class="pill active" id="pay-digital" data-pay="digital">UPI / Card</button>
+            <button type="button" class="pill" id="pay-cash" data-pay="cash">Cash (Wallet)</button>
+          </div>
+        </div>
+
+        <div class="filter-grid">
+          <div>
+            <label class="form-label" for="exp-date">Date</label>
+            <input type="date" id="exp-date" class="input" required />
+          </div>
+          <div>
+            <label class="form-label" for="exp-note">Note (optional)</label>
+            <input type="text" id="exp-note" class="input" placeholder="e.g., Metro, Lunch" maxlength="60" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top: 6px;">Save Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 2: CASH ACTION (SET / WITHDRAW)
+       ========================================================= -->
+  <div class="modal-backdrop" id="modal-cash">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <span class="modal-title" id="cash-modal-title">Cash Action</span>
+        <button class="close-btn" data-close="modal-cash">×</button>
+      </div>
+      <form id="form-cash">
+        <input type="hidden" id="cash-action-type" />
+        <div class="form-group">
+          <label class="form-label" for="cash-amount" id="cash-amount-label">Amount (₹)</label>
+          <input type="number" inputmode="decimal" step="any" min="0" id="cash-amount" class="input amount-input" placeholder="0" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="cash-submit-btn">Confirm</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MODAL 3: IN-PAGE CONFIRMATION (NO NATIVE confirm())
+       ========================================================= -->
+  <div class="modal-backdrop" id="modal-confirm">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <span class="modal-title" id="confirm-title">Are you sure?</span>
+        <button class="close-btn" data-close="modal-confirm">×</button>
+      </div>
+      <p id="confirm-message" style="font-size: 14px; color: var(--text-muted); margin: 0 0 16px;"></p>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-secondary btn-full" data-close="modal-confirm">Cancel</button>
+        <button class="btn btn-danger btn-full" id="confirm-ok-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* =========================================================
+       3. CONFIGURATION & CATEGORIES
+       ========================================================= */
+    const STORAGE_KEY = 'rupeetrack_data_v1';
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+    const CATEGORIES = [
+      { name: 'Food', icon: '🍛' },
+      { name: 'Transport', icon: '🚇' },
+      { name: 'Rent', icon: '🏠' },
+      { name: 'Shopping', icon: '🛍️' },
+      { name: 'Bills', icon: '⚡' },
+      { name: 'Entertainment', icon: '🎬' },
+      { name: 'Other', icon: '📦' }
+    ];
+
+    const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.name, c.icon]));
+
+    /* =========================================================
+       4. PWA MANIFEST & SERVICE WORKER REGISTRATION
+       ========================================================= */
+    (function setupPWA() {
+      try {
+        // Inline fallback manifest when opened as standalone HTML file
+        const manifestEl = document.getElementById('pwa-manifest');
+        if (!manifestEl.getAttribute('href')) {
+          const manifest = {
+            name: 'RupeeTrack — Personal Finance',
+            short_name: 'RupeeTrack',
+            start_url: '.',
+            display: 'standalone',
+            background_color: '#0b1120',
+            theme_color: '#0b1120',
+            icons: [{
+              src: document.getElementById('app-icon').href,
+              sizes: '128x128',
+              type: 'image/svg+xml'
+            }]
+          };
+          const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+          manifestEl.href = URL.createObjectURL(blob);
+        }
+      } catch (e) {}
+
+      // Register sw.js when hosted over HTTPS (GitHub Pages / Netlify / localhost)
+      if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+    })();
+
+    /* =========================================================
+       5. DATE & CURRENCY HELPERS
+       ========================================================= */
+    function formatINR(num) {
+      const val = Math.round(Number(num) || 0);
+      return '₹' + val.toLocaleString('en-IN');
+    }
+
+    function toISODate(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function getMonthBounds(offsetMonths = 0) {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth() + offsetMonths;
+      const start = new Date(y, m, 1);
+      const end = new Date(y, m + 1, 0);
+      return {
+        startStr: toISODate(start),
+        endStr: toISODate(end),
+        daysInMonth: end.getDate(),
+        monthName: start.toLocaleString('en-IN', { month: 'long', year: 'numeric' }),
+        shortMonth: start.toLocaleString('en-IN', { month: 'short' })
+      };
+    }
+
+    function formatDisplayDate(isoStr) {
+      if (!isoStr) return '';
+      const [y, m, d] = isoStr.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      return dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
+
+    /* =========================================================
+       6. SAMPLE DATA GENERATOR (WITH "PAID BY DAD" ENTRIES)
+       ========================================================= */
+    function buildSampleState() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = now.getMonth();
+      const todayDay = now.getDate();
+
+      function dayInMonth(monthOffset, day) {
+        const lastDay = new Date(y, m + monthOffset + 1, 0).getDate();
+        return toISODate(new Date(y, m + monthOffset, Math.min(day, lastDay)));
+      }
+
+      const thisMonthSamples = [
+        { id: 's1', amount: 3500, category: 'Rent', date: dayInMonth(0, 1), note: 'Shared room contribution', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 1001 },
+        { id: 's2', amount: 1450, category: 'Bills', date: dayInMonth(0, 3), note: 'WiFi & mobile recharge', paymentMethod: 'digital', paidBy: 'Dad', settled: false, createdAt: 1002 },
+        { id: 's3', amount: 1850, category: 'Shopping', date: dayInMonth(0, Math.min(todayDay, 5)), note: 'Everyday essentials', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 1003 },
+        { id: 's4', amount: 640, category: 'Food', date: dayInMonth(0, Math.min(todayDay, 6)), note: 'Takeaway dinner', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 1004 },
+        { id: 's5', amount: 220, category: 'Food', date: dayInMonth(0, Math.min(todayDay, 7)), note: 'Snacks & chai', paymentMethod: 'cash', paidBy: 'me', settled: true, createdAt: 1005 },
+        { id: 's6', amount: 180, category: 'Transport', date: dayInMonth(0, Math.min(todayDay, 8)), note: 'Metro & auto', paymentMethod: 'cash', paidBy: 'me', settled: true, createdAt: 1006 },
+        { id: 's7', amount: 950, category: 'Entertainment', date: dayInMonth(0, Math.min(todayDay, 10)), note: 'Movie & snacks with friends', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 1007 },
+        { id: 's8', amount: 580, category: 'Food', date: dayInMonth(0, Math.min(todayDay, 11)), note: 'Takeaway lunch', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 1008 },
+        { id: 's9', amount: 190, category: 'Food', date: dayInMonth(0, Math.min(todayDay, 12)), note: 'Coffee & bakery', paymentMethod: 'cash', paidBy: 'me', settled: true, createdAt: 1009 },
+        { id: 's10', amount: 210, category: 'Transport', date: dayInMonth(0, Math.min(todayDay, 13)), note: 'Cab ride', paymentMethod: 'digital', paidBy: 'Dad', settled: false, createdAt: 1010 },
+        { id: 's11', amount: 160, category: 'Food', date: dayInMonth(0, Math.min(todayDay, 14)), note: 'Street food', paymentMethod: 'cash', paidBy: 'me', settled: true, createdAt: 1011 },
+        { id: 's12', amount: 1920, category: 'Food', date: dayInMonth(0, todayDay), note: 'Groceries & weekly meal prep', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 1012 }
+      ];
+
+      const lastMonthSamples = [
+        { id: 'p1', amount: 3500, category: 'Rent', date: dayInMonth(-1, 1), note: 'Shared room contribution', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 901 },
+        { id: 'p2', amount: 1300, category: 'Bills', date: dayInMonth(-1, 4), note: 'Electricity & phone', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 902 },
+        { id: 'p3', amount: 2100, category: 'Food', date: dayInMonth(-1, 11), note: 'Groceries & dining', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 903 },
+        { id: 'p4', amount: 900, category: 'Transport', date: dayInMonth(-1, 16), note: 'Metro card top-up', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 904 },
+        { id: 'p5', amount: 1200, category: 'Shopping', date: dayInMonth(-1, 21), note: 'T-shirt', paymentMethod: 'digital', paidBy: 'me', settled: true, createdAt: 905 }
+      ];
+
+      return {
+        budgetLimit: 15000,
+        cashBalance: 1850,
+        theme: 'dark',
+        countOthersInLimit: true,
+        lastCategory: 'Food',
+        savedPayers: ['Dad'],
+        firstUsedAt: Date.now(),
+        lastBackupAt: null,
+        expenses: [...thisMonthSamples, ...lastMonthSamples],
+        isSampleData: true
+      };
+    }
+
+    /* =========================================================
+       7. STATE PERSISTENCE & THEME ENGINE
+       ========================================================= */
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.expenses)) {
+            return {
+              budgetLimit: Number(parsed.budgetLimit) || 15000,
+              cashBalance: Number(parsed.cashBalance) || 0,
+              theme: parsed.theme || 'dark',
+              countOthersInLimit: parsed.countOthersInLimit !== undefined ? Boolean(parsed.countOthersInLimit) : true,
+              lastCategory: parsed.lastCategory || 'Food',
+              savedPayers: Array.isArray(parsed.savedPayers) && parsed.savedPayers.length ? parsed.savedPayers : ['Dad'],
+              firstUsedAt: parsed.firstUsedAt || Date.now(),
+              lastBackupAt: parsed.lastBackupAt || null,
+              expenses: parsed.expenses.map(e => ({
+                ...e,
+                paidBy: e.paidBy || 'me',
+                settled: e.settled !== undefined ? Boolean(e.settled) : (e.paidBy ? e.paidBy === 'me' : true)
+              })),
+              isSampleData: Boolean(parsed.isSampleData)
+            };
+          }
+        }
+      } catch (e) {}
+      return buildSampleState();
+    }
+
+    const IDB_NAME = 'rupeetrack_db';
+    const IDB_STORE = 'app_state';
+
+    function openAppDB() {
+      return new Promise((resolve, reject) => {
+        if (!('indexedDB' in window)) return reject(new Error('No IndexedDB'));
+        const req = indexedDB.open(IDB_NAME, 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(IDB_STORE)) {
+            db.createObjectStore(IDB_STORE);
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function saveToIndexedDB(data) {
+      try {
+        const db = await openAppDB();
+        const tx = db.transaction(IDB_STORE, 'readwrite');
+        tx.objectStore(IDB_STORE).put(data, 'main');
+      } catch (e) {}
+    }
+
+    async function loadFromIndexedDB() {
+      try {
+        const db = await openAppDB();
+        return await new Promise((resolve) => {
+          const tx = db.transaction(IDB_STORE, 'readonly');
+          const req = tx.objectStore(IDB_STORE).get('main');
+          req.onsuccess = () => resolve(req.result || null);
+          req.onerror = () => resolve(null);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function requestDurableStorage() {
+      let persisted = false;
+      try {
+        if (navigator.storage && navigator.storage.persist) {
+          persisted = await navigator.storage.persisted();
+          if (!persisted) persisted = await navigator.storage.persist();
+        }
+      } catch (e) {}
+      const el = document.getElementById('storage-status-label');
+      if (el) {
+        el.textContent = persisted
+          ? 'Storage: Durable (IndexedDB + localStorage, eviction-protected)'
+          : 'Storage: Saved locally (IndexedDB + localStorage)';
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+      saveToIndexedDB(state);
+    }
+
+    function applyTheme() {
+      let resolved = state.theme || 'dark';
+      if (resolved === 'system') {
+        resolved = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', resolved);
+      document.getElementById('meta-theme-color').setAttribute('content', resolved === 'dark' ? '#0b1120' : '#f8fafc');
+      document.querySelectorAll('#theme-pills .pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.themeChoice === (state.theme || 'dark'));
+      });
+    }
+
+    /* =========================================================
+       8. CORE ANALYTICS & INSIGHTS ENGINE
+       ========================================================= */
+    function getExpensesInRange(startStr, endStr, category = 'All') {
+      return state.expenses
+        .filter(e => {
+          if (startStr && e.date < startStr) return false;
+          if (endStr && e.date > endStr) return false;
+          if (category && category !== 'All' && e.category !== category) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          if (b.date !== a.date) return b.date.localeCompare(a.date);
+          return (b.createdAt || 0) - (a.createdAt || 0);
+        });
+    }
+
+    function sumExpenses(list) {
+      return list.reduce((acc, e) => acc + (Number(e.amount) || 0), 0);
+    }
+
+    function computeMonthlyAnalytics() {
+      const thisMonth = getMonthBounds(0);
+      const lastMonth = getMonthBounds(-1);
+      const now = new Date();
+      const currentDay = now.getDate();
+      const daysLeft = Math.max(1, thisMonth.daysInMonth - currentDay + 1);
+
+      const thisExpenses = getExpensesInRange(thisMonth.startStr, thisMonth.endStr);
+      const lastExpenses = getExpensesInRange(lastMonth.startStr, lastMonth.endStr);
+
+      const totalSpentAll = sumExpenses(thisExpenses);
+      const paidByOthersList = thisExpenses.filter(e => e.paidBy && e.paidBy !== 'me');
+      const paidByOthersTotal = sumExpenses(paidByOthersList);
+
+      // Breakdown of paid by others this month by person
+      const paidByOthersMap = {};
+      paidByOthersList.forEach(e => {
+        paidByOthersMap[e.paidBy] = (paidByOthersMap[e.paidBy] || 0) + Number(e.amount);
+      });
+
+      // Limit calculation respects user setting (default: counts toward limit)
+      const spentAgainstLimit = state.countOthersInLimit
+        ? totalSpentAll
+        : (totalSpentAll - paidByOthersTotal);
+
+      const spentLastMonth = sumExpenses(lastExpenses);
+      const limit = Math.max(1, Number(state.budgetLimit) || 15000);
+      const pctUsed = (spentAgainstLimit / limit) * 100;
+      const remaining = limit - spentAgainstLimit;
+      const safeDaily = remaining > 0 ? remaining / daysLeft : 0;
+
+      const avgDailySoFar = spentAgainstLimit / Math.max(1, currentDay);
+      const projectedMonthEnd = avgDailySoFar * thisMonth.daysInMonth;
+
+      // Category breakdown (all spending)
+      const catTotalsThis = {};
+      const catTotalsLast = {};
+      thisExpenses.forEach(e => {
+        catTotalsThis[e.category] = (catTotalsThis[e.category] || 0) + Number(e.amount);
+      });
+      lastExpenses.forEach(e => {
+        catTotalsLast[e.category] = (catTotalsLast[e.category] || 0) + Number(e.amount);
+      });
+
+      const topCategories = Object.entries(catTotalsThis)
+        .map(([name, total]) => ({
+          name,
+          total,
+          pct: totalSpentAll > 0 ? (total / totalSpentAll) * 100 : 0
+        }))
+        .sort((a, b) => b.total - a.total);
+
+      // Pattern Flags
+      const flags = [];
+      if (spentLastMonth > 0) {
+        topCategories.forEach(cat => {
+          const prev = catTotalsLast[cat.name] || 0;
+          if (prev > 0 && cat.total > prev * 1.3 && (cat.total - prev) >= 500) {
+            const growthPct = Math.round(((cat.total - prev) / prev) * 100);
+            flags.push(`${cat.name} is up ${growthPct}% compared to ${lastMonth.shortMonth} (${formatINR(cat.total)} vs ${formatINR(prev)}).`);
+          }
+        });
+      }
+
+      const smallExpenses = thisExpenses.filter(e => Number(e.amount) <= 250);
+      if (smallExpenses.length >= 4) {
+        const smallSum = sumExpenses(smallExpenses);
+        flags.push(`${smallExpenses.length} small purchases (₹250 or less) have added up to ${formatINR(smallSum)} this month.`);
+      }
+
+      const bigExpense = thisExpenses.find(e => totalSpentAll > 0 && Number(e.amount) / totalSpentAll > 0.35 && thisExpenses.length > 2);
+      if (bigExpense) {
+        const bigPct = Math.round((Number(bigExpense.amount) / totalSpentAll) * 100);
+        flags.push(`One ${bigExpense.category} entry (${formatINR(bigExpense.amount)}) accounts for ${bigPct}% of your spending so far.`);
+      }
+
+      // Practical Suggestions
+      const suggestions = [];
+      if (topCategories.length > 0 && totalSpentAll > 0) {
+        const top = topCategories[0];
+        const topPct = Math.round(top.pct);
+        if (top.name === 'Food' && top.total >= 1200) {
+          const estMonthlySave = Math.round((top.total * 0.25) / 50) * 50;
+          suggestions.push(`Food is ${topPct}% of your spending (${formatINR(top.total)}). Swapping two takeaway orders a week for home-cooked meals could save roughly ${formatINR(estMonthlySave)} a month.`);
+        } else if (top.name !== 'Rent') {
+          const trim15 = Math.round((top.total * 0.15) / 50) * 50;
+          suggestions.push(`${top.name} is your largest category at ${topPct}% (${formatINR(top.total)}). Trimming it by 15% frees up about ${formatINR(trim15)} this month.`);
+        } else if (topCategories[1]) {
+          const second = topCategories[1];
+          const trim15 = Math.round((second.total * 0.15) / 50) * 50;
+          suggestions.push(`Outside of Rent, ${second.name} is your highest spend (${formatINR(second.total)}). Cutting 15% there would save around ${formatINR(trim15)}.`);
+        }
+      }
+
+      if (smallExpenses.length >= 4) {
+        const smallSum = sumExpenses(smallExpenses);
+        const capPerWeek = Math.round((smallSum * 0.6) / 4 / 50) * 50 || 200;
+        suggestions.push(`Small daily buys total ${formatINR(smallSum)}. Setting a ${formatINR(capPerWeek)}/week pocket-money cap makes them easier to keep in check.`);
+      }
+
+      if (projectedMonthEnd > limit && remaining > 0) {
+        suggestions.push(`To finish within your ${formatINR(limit)} limit, aim for ${formatINR(safeDaily)}/day over the remaining ${daysLeft} days.`);
+      } else if (suggestions.length < 2 && totalSpentAll > 0) {
+        suggestions.push(`You're tracking well at ${formatINR(avgDailySoFar)}/day. Moving any leftover ${formatINR(Math.max(0, remaining))} to savings at month-end is an easy win.`);
+      }
+
+      if (thisExpenses.length === 0) {
+        suggestions.push('Log your first expense using "+ Add Expense" to unlock personalized spending insights.');
+      }
+
+      return {
+        thisMonth,
+        lastMonth,
+        daysLeft,
+        currentDay,
+        thisExpenses,
+        totalSpentAll,
+        paidByOthersTotal,
+        paidByOthersMap,
+        spentAgainstLimit,
+        spentLastMonth,
+        limit,
+        pctUsed,
+        remaining,
+        safeDaily,
+        projectedMonthEnd,
+        topCategories: topCategories.slice(0, 3),
+        flags,
+        suggestions: suggestions.slice(0, 3)
+      };
+    }
+
+    /* =========================================================
+       9. UI RENDERING
+       ========================================================= */
+    let currentView = 'dashboard';
+    let selectedCategory = state.lastCategory || 'Food';
+    let selectedPayMethod = 'digital';
+    let selectedPaidByMode = 'me'; // 'me' | 'other'
+    let owedFilter = 'unsettled';
+    let confirmCallback = null;
+
+    function renderAll() {
+      applyTheme();
+      const analytics = computeMonthlyAnalytics();
+
+      document.getElementById('header-month-label').textContent = analytics.thisMonth.monthName;
+      document.getElementById('sample-banner').style.display = state.isSampleData ? 'flex' : 'none';
+
+      // 7-day backup reminder check
+      const referenceTime = state.lastBackupAt || state.firstUsedAt || Date.now();
+      const needsBackup = !state.isSampleData && (Date.now() - referenceTime > SEVEN_DAYS_MS);
+      document.getElementById('backup-banner').style.display = needsBackup ? 'flex' : 'none';
+
+      if (state.lastBackupAt) {
+        const dt = new Date(state.lastBackupAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        document.getElementById('last-backup-label').textContent = `Last backup exported on ${dt}. Export JSON for full iPhone ↔ computer sync.`;
+      }
+
+      renderDashboard(analytics);
+      renderExpensesList();
+      renderOwedView();
+      renderInsights(analytics);
+
+      document.getElementById('setting-budget-limit').value = state.budgetLimit;
+      document.getElementById('setting-count-others').checked = state.countOthersInLimit;
+    }
+
+    function formatPaidByOthersSentence(a) {
+      if (a.paidByOthersTotal <= 0) return '';
+      const breakdown = Object.entries(a.paidByOthersMap)
+        .map(([name, amt]) => `${formatINR(amt)} by ${escapeHtml(name)}`)
+        .join(', ');
+      return `You spent <strong>${formatINR(a.totalSpentAll)}</strong> this month. <strong>${formatINR(a.paidByOthersTotal)}</strong> was paid by others (${breakdown}).`;
+    }
+
+    function renderDashboard(a) {
+      document.getElementById('dash-cash-balance').textContent = formatINR(state.cashBalance);
+      document.getElementById('budget-card-title').textContent = `${a.thisMonth.shortMonth} Budget Guardrail`;
+      document.getElementById('dash-month-spent').textContent = formatINR(a.spentAgainstLimit);
+      document.getElementById('dash-month-limit').textContent = `of ${formatINR(a.limit)}`;
+
+      const clampedPct = Math.min(100, Math.max(0, a.pctUsed));
+      const fill = document.getElementById('dash-progress-fill');
+      fill.style.width = `${clampedPct.toFixed(1)}%`;
+      if (a.pctUsed >= 100) {
+        fill.style.backgroundColor = 'var(--danger)';
+      } else if (a.pctUsed >= 75) {
+        fill.style.backgroundColor = 'var(--warn)';
+      } else {
+        fill.style.backgroundColor = 'var(--accent)';
+      }
+
+      document.getElementById('dash-pct-used').textContent = `${Math.round(a.pctUsed)}% used`;
+      document.getElementById('dash-days-left').textContent = `${a.daysLeft} ${a.daysLeft === 1 ? 'day' : 'days'} left`;
+
+      const remEl = document.getElementById('dash-remaining');
+      remEl.textContent = a.remaining >= 0 ? formatINR(a.remaining) : `-${formatINR(Math.abs(a.remaining))}`;
+      remEl.style.color = a.remaining < 0 ? 'var(--danger-text)' : 'var(--text)';
+      document.getElementById('dash-daily-safe').textContent = `${formatINR(a.safeDaily)}/day`;
+
+      // Paid by others summary line
+      const othersEl = document.getElementById('dash-paid-others');
+      if (a.paidByOthersTotal > 0) {
+        othersEl.style.display = 'block';
+        othersEl.innerHTML = formatPaidByOthersSentence(a);
+      } else {
+        othersEl.style.display = 'none';
+      }
+
+      // Guardrail warnings
+      const alertsEl = document.getElementById('dash-alerts');
+      const alertHtml = [];
+      if (a.pctUsed >= 100) {
+        const over = a.spentAgainstLimit - a.limit;
+        alertHtml.push(`<div class="alert alert-danger"><span>🚨</span><span>You've reached <strong>100%</strong> of your monthly limit (${over > 0 ? formatINR(over) + ' over' : 'exact limit'}).</span></div>`);
+      } else if (a.pctUsed >= 75) {
+        alertHtml.push(`<div class="alert alert-warn"><span>⚠️</span><span>Heads up: you've used <strong>${Math.round(a.pctUsed)}%</strong> of your ${formatINR(a.limit)} limit.</span></div>`);
+      }
+
+      if (a.projectedMonthEnd > a.limit && a.pctUsed < 100 && a.spentAgainstLimit > 0) {
+        const overProj = a.projectedMonthEnd - a.limit;
+        alertHtml.push(`<div class="alert alert-warn"><span>📈</span><span>Pace warning: at your current rate, you'll spend ~<strong>${formatINR(a.projectedMonthEnd)}</strong> by month-end (${formatINR(overProj)} over limit).</span></div>`);
+      }
+
+      if (alertHtml.length === 0 && a.spentAgainstLimit > 0) {
+        alertHtml.push(`<div class="alert alert-ok"><span>✅</span><span>On track — your pace is within your ${formatINR(a.limit)} monthly budget.</span></div>`);
+      }
+      alertsEl.innerHTML = alertHtml.join('');
+
+      const recentList = getExpensesInRange(null, null, 'All').slice(0, 4);
+      const recentContainer = document.getElementById('dash-recent-list');
+      if (recentList.length === 0) {
+        recentContainer.innerHTML = `<div class="empty-state">No expenses logged yet. Tap <strong>+ Add Expense</strong> to add one.</div>`;
+      } else {
+        recentContainer.innerHTML = recentList.map(renderExpenseRow).join('');
+      }
+    }
+
+    function renderExpenseRow(e) {
+      const icon = CATEGORY_MAP[e.category] || '📦';
+      const isOther = e.paidBy && e.paidBy !== 'me';
+      let badge = '';
+      if (isOther) {
+        badge = `<span class="badge badge-other">Paid by ${escapeHtml(e.paidBy)}</span>`;
+        if (e.settled) {
+          badge += ` <span class="badge badge-settled">Settled</span>`;
+        }
+      } else if (e.paymentMethod === 'cash') {
+        badge = '<span class="badge badge-cash">Cash</span>';
+      } else {
+        badge = '<span class="badge badge-digital">UPI/Card</span>';
+      }
+
+      const notePart = e.note ? ` · ${escapeHtml(e.note)}` : '';
+
+      return `
+        <div class="tx-item" data-id="${e.id}">
+          <div class="tx-left">
+            <div class="tx-icon">${icon}</div>
+            <div class="tx-info">
+              <div class="tx-title-row">
+                <span class="tx-cat">${escapeHtml(e.category)}</span>
+                ${badge}
+              </div>
+              <div class="tx-sub">${formatDisplayDate(e.date)}${notePart}</div>
+            </div>
+          </div>
+          <div class="tx-right">
+            <span class="tx-amount">${formatINR(e.amount)}</span>
+            <div class="tx-actions">
+              <button class="icon-btn" data-action="edit" data-id="${e.id}">Edit</button>
+              <button class="icon-btn del" data-action="delete" data-id="${e.id}">Delete</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderExpensesList() {
+      const from = document.getElementById('filter-from').value;
+      const to = document.getElementById('filter-to').value;
+      const cat = document.getElementById('filter-category').value;
+
+      const filtered = getExpensesInRange(from, to, cat);
+      const total = sumExpenses(filtered);
+
+      document.getElementById('filter-count').textContent = `${filtered.length} ${filtered.length === 1 ? 'entry' : 'entries'}`;
+      document.getElementById('filter-total').textContent = `Total: ${formatINR(total)}`;
+
+      const listEl = document.getElementById('all-expenses-list');
+      listEl.innerHTML = filtered.length === 0
+        ? `<div class="card empty-state">No expenses match these filters.</div>`
+        : filtered.map(renderExpenseRow).join('');
+    }
+
+    function renderOwedView() {
+      const otherExpenses = getExpensesInRange(null, null, 'All').filter(e => e.paidBy && e.paidBy !== 'me');
+      const unsettled = otherExpenses.filter(e => !e.settled);
+
+      // Totals still owed per person
+      const owedByPerson = {};
+      unsettled.forEach(e => {
+        owedByPerson[e.paidBy] = (owedByPerson[e.paidBy] || 0) + Number(e.amount);
+      });
+
+      const totalsEl = document.getElementById('owed-totals-body');
+      const entries = Object.entries(owedByPerson).sort((a, b) => b[1] - a[1]);
+      if (entries.length === 0) {
+        totalsEl.innerHTML = `<div style="font-size: 14px; color: var(--accent-text);">All settled up — nothing currently owed.</div>`;
+      } else {
+        totalsEl.innerHTML = entries.map(([name, amt]) => `
+          <div class="insight-stat">
+            <span><strong>${escapeHtml(name)}</strong></span>
+            <span style="font-weight: 800; color: var(--warn-text);">${formatINR(amt)} owed</span>
+          </div>
+        `).join('');
+      }
+
+      const listToShow = owedFilter === 'unsettled' ? unsettled : otherExpenses;
+      const listEl = document.getElementById('owed-list');
+      if (listToShow.length === 0) {
+        listEl.innerHTML = `<div class="empty-state">${owedFilter === 'unsettled' ? 'No unsettled amounts.' : 'No expenses paid by someone else yet.'}</div>`;
+      } else {
+        listEl.innerHTML = listToShow.map(e => `
+          <div class="tx-item">
+            <div class="tx-left">
+              <div class="tx-icon">${CATEGORY_MAP[e.category] || '📦'}</div>
+              <div class="tx-info">
+                <div class="tx-title-row">
+                  <span class="tx-cat">${escapeHtml(e.paidBy)} · ${escapeHtml(e.category)}</span>
+                  ${e.settled ? '<span class="badge badge-settled">Settled</span>' : '<span class="badge badge-other">Owed</span>'}
+                </div>
+                <div class="tx-sub">${formatDisplayDate(e.date)}${e.note ? ' · ' + escapeHtml(e.note) : ''}</div>
+              </div>
+            </div>
+            <div class="tx-right">
+              <span class="tx-amount">${formatINR(e.amount)}</span>
+              <button class="icon-btn" data-toggle-settled="${e.id}">${e.settled ? 'Mark Owed' : 'Mark Settled'}</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderInsights(a) {
+      const summaryEl = document.getElementById('insight-summary-body');
+      let comparisonText = `No data from ${a.lastMonth.shortMonth} to compare yet.`;
+      if (a.spentLastMonth > 0) {
+        const diff = a.totalSpentAll - a.spentLastMonth;
+        const diffPct = Math.round((Math.abs(diff) / a.spentLastMonth) * 100);
+        if (diff > 0) {
+          comparisonText = `That's <strong>${formatINR(diff)} (${diffPct}%) more</strong> than ${a.lastMonth.shortMonth} (${formatINR(a.spentLastMonth)}).`;
+        } else if (diff < 0) {
+          comparisonText = `That's <strong>${formatINR(Math.abs(diff))} (${diffPct}%) less</strong> than ${a.lastMonth.shortMonth} (${formatINR(a.spentLastMonth)}).`;
+        } else {
+          comparisonText = `Same total as ${a.lastMonth.shortMonth} (${formatINR(a.spentLastMonth)}).`;
+        }
+      }
+
+      const othersNote = a.paidByOthersTotal > 0 ? `<p style="margin: 8px 0 0; font-size: 13.5px; color: var(--text-muted);">${formatPaidByOthersSentence(a)}</p>` : '';
+
+      summaryEl.innerHTML = `
+        <p style="margin: 0; font-size: 14.5px;">
+          In <strong>${a.thisMonth.monthName}</strong>, your total spending is <strong>${formatINR(a.totalSpentAll)}</strong> across ${a.thisExpenses.length} ${a.thisExpenses.length === 1 ? 'entry' : 'entries'}. ${comparisonText}
+        </p>
+        ${othersNote}
+      `;
+
+      const topEl = document.getElementById('insight-top-cats');
+      topEl.innerHTML = a.topCategories.length === 0
+        ? `<div class="empty-state" style="padding: 12px;">No spending recorded this month yet.</div>`
+        : a.topCategories.map((c, idx) => `
+          <div class="insight-stat">
+            <span>${idx + 1}. ${CATEGORY_MAP[c.name] || '📦'} <strong>${escapeHtml(c.name)}</strong></span>
+            <span><strong>${formatINR(c.total)}</strong> <span style="color: var(--text-muted); font-size: 12.5px;">(${Math.round(c.pct)}%)</span></span>
+          </div>
+        `).join('');
+
+      const flagsEl = document.getElementById('insight-flags');
+      flagsEl.innerHTML = a.flags.length === 0
+        ? `<div style="font-size: 13.5px; color: var(--text-muted);">No unusual spending spikes or patterns detected this month.</div>`
+        : a.flags.map(f => `<div class="flag-card">⚡ ${escapeHtml(f)}</div>`).join('');
+
+      document.getElementById('insight-suggestions').innerHTML = a.suggestions
+        .map(s => `<div class="suggestion-card">💡 ${escapeHtml(s)}</div>`)
+        .join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* =========================================================
+       10. NAVIGATION & MODALS
+       ========================================================= */
+    function switchView(viewName) {
+      currentView = viewName;
+      document.querySelectorAll('.view-section').forEach(sec => {
+        sec.classList.toggle('active', sec.id === `view-${viewName}`);
+      });
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === viewName);
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+    }
+
+    function askConfirm(title, message, onConfirm) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      confirmCallback = onConfirm;
+      openModal('modal-confirm');
+    }
+
+    /* =========================================================
+       11. EXPENSE & CASH MODAL HANDLERS
+       ========================================================= */
+    function initCategoryUI() {
+      document.getElementById('exp-cat-chips').innerHTML = CATEGORIES.map(c =>
+        `<button type="button" class="cat-chip" data-cat="${c.name}">${c.icon} ${c.name}</button>`
+      ).join('');
+
+      const filterSelect = document.getElementById('filter-category');
+      CATEGORIES.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.name;
+        opt.textContent = `${c.icon} ${c.name}`;
+        filterSelect.appendChild(opt);
+      });
+    }
+
+    function renderSavedPayerChips() {
+      const container = document.getElementById('saved-payers-list');
+      container.innerHTML = (state.savedPayers || []).map(name =>
+        `<button type="button" class="pill" data-payer-pick="${escapeHtml(name)}">${escapeHtml(name)}</button>`
+      ).join('');
+    }
+
+    function setExpenseCategory(cat) {
+      selectedCategory = cat;
+      document.querySelectorAll('#exp-cat-chips .cat-chip').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.cat === cat);
+      });
+    }
+
+    function setPayMethod(method) {
+      selectedPayMethod = method;
+      document.getElementById('pay-digital').classList.toggle('active', method === 'digital');
+      document.getElementById('pay-cash').classList.toggle('active', method === 'cash');
+    }
+
+    function setPaidByMode(mode) {
+      selectedPaidByMode = mode;
+      document.getElementById('paidby-me').classList.toggle('active', mode === 'me');
+      document.getElementById('paidby-other').classList.toggle('active', mode === 'other');
+      document.getElementById('payer-name-group').style.display = mode === 'other' ? 'block' : 'none';
+      // Hide wallet cash-deduction toggle when someone else paid so cash on hand is never reduced
+      document.getElementById('pay-method-group').style.display = mode === 'me' ? 'block' : 'none';
+      if (mode === 'other') renderSavedPayerChips();
+    }
+
+    function openAddExpenseModal(defaultPay = 'digital') {
+      document.getElementById('expense-modal-title').textContent = 'Add Expense';
+      document.getElementById('exp-id').value = '';
+      document.getElementById('exp-amount').value = '';
+      document.getElementById('exp-date').value = toISODate(new Date());
+      document.getElementById('exp-note').value = '';
+      document.getElementById('exp-payer-name').value = '';
+      // Pre-select last-used category for 3-tap quick add
+      setExpenseCategory(state.lastCategory || 'Food');
+      setPaidByMode('me');
+      setPayMethod(defaultPay);
+      openModal('modal-expense');
+      setTimeout(() => document.getElementById('exp-amount').focus(), 60);
+    }
+
+    function openEditExpenseModal(id) {
+      const item = state.expenses.find(e => e.id === id);
+      if (!item) return;
+      document.getElementById('expense-modal-title').textContent = 'Edit Expense';
+      document.getElementById('exp-id').value = item.id;
+      document.getElementById('exp-amount').value = item.amount;
+      document.getElementById('exp-date').value = item.date;
+      document.getElementById('exp-note').value = item.note || '';
+      setExpenseCategory(item.category);
+      if (item.paidBy && item.paidBy !== 'me') {
+        setPaidByMode('other');
+        document.getElementById('exp-payer-name').value = item.paidBy;
+      } else {
+        setPaidByMode('me');
+        setPayMethod(item.paymentMethod || 'digital');
+      }
+      openModal('modal-expense');
+    }
+
+    function deleteExpense(id) {
+      const idx = state.expenses.findIndex(e => e.id === id);
+      if (idx === -1) return;
+      const item = state.expenses[idx];
+      askConfirm('Delete Expense', `Remove ${item.category} (${formatINR(item.amount)})?`, () => {
+        if ((!item.paidBy || item.paidBy === 'me') && item.paymentMethod === 'cash') {
+          state.cashBalance += Number(item.amount) || 0;
+        }
+        state.expenses.splice(idx, 1);
+        saveState();
+        renderAll();
+        showToast('Expense deleted');
+      });
+    }
+
+    function openCashModal(type) {
+      document.getElementById('cash-action-type').value = type;
+      document.getElementById('cash-amount').value = type === 'set' ? state.cashBalance : '';
+      if (type === 'withdraw') {
+        document.getElementById('cash-modal-title').textContent = 'Record Cash Withdrawal';
+        document.getElementById('cash-amount-label').textContent = 'Amount Withdrawn (₹)';
+        document.getElementById('cash-submit-btn').textContent = 'Add to Cash on Hand';
+      } else {
+        document.getElementById('cash-modal-title').textContent = 'Set Current Cash Balance';
+        document.getElementById('cash-amount-label').textContent = 'Cash Currently in Wallet (₹)';
+        document.getElementById('cash-submit-btn').textContent = 'Update Balance';
+      }
+      openModal('modal-cash');
+      setTimeout(() => document.getElementById('cash-amount').focus(), 60);
+    }
+
+    /* =========================================================
+       12. EXPORT & IMPORT (JSON + CSV FOR SYNC & BACKUP)
+       ========================================================= */
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportJSON() {
+      state.lastBackupAt = Date.now();
+      saveState();
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, `rupeetrack-backup-${toISODate(new Date())}.json`);
+      renderAll();
+      showToast('JSON backup exported');
+    }
+
+    function exportCSV() {
+      state.lastBackupAt = Date.now();
+      saveState();
+      const header = ['Date', 'Category', 'Amount', 'PaymentMethod', 'PaidBy', 'Settled', 'Note'];
+      const rows = getExpensesInRange(null, null, 'All').map(e => [
+        e.date,
+        e.category,
+        e.amount,
+        e.paymentMethod || 'digital',
+        `"${String(e.paidBy || 'me').replace(/"/g, '""')}"`,
+        e.settled ? 'yes' : 'no',
+        `"${String(e.note || '').replace(/"/g, '""')}"`
+      ]);
+      const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+      downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `rupeetrack-backup-${toISODate(new Date())}.csv`);
+      renderAll();
+      showToast('CSV backup exported');
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '', inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (ch === ',' && !inQuotes) {
+          result.push(current); current = '';
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function importBackupFile(file) {
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const text = String(ev.target.result || '').trim();
+        if (file.name.toLowerCase().endsWith('.json') || text.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(text);
+            if (!parsed || !Array.isArray(parsed.expenses)) throw new Error('Invalid');
+            state = {
+              ...state,
+              ...parsed,
+              isSampleData: false,
+              lastBackupAt: Date.now()
+            };
+            saveState();
+            renderAll();
+            showToast(`Restored ${state.expenses.length} entries from JSON`);
+            return;
+          } catch (err) {
+            showToast('Invalid JSON backup file');
+            return;
+          }
+        }
+
+        // CSV fallback
+        try {
+          const lines = text.split(/\r?\n/).filter(Boolean);
+          if (lines.length < 2) { showToast('CSV file has no data rows'); return; }
+          const imported = [];
+          for (let i = 1; i < lines.length; i++) {
+            const cols = parseCSVLine(lines[i]);
+            if (cols.length < 3) continue;
+            const date = cols[0].trim();
+            const category = CATEGORY_MAP[cols[1].trim()] ? cols[1].trim() : 'Other';
+            const amount = Number(cols[2].trim());
+            const paymentMethod = (cols[3] || 'digital').trim().toLowerCase() === 'cash' ? 'cash' : 'digital';
+            const paidBy = cols.length >= 7 ? (cols[4].trim() || 'me') : 'me';
+            const settled = cols.length >= 7 ? cols[5].trim().toLowerCase() !== 'no' : true;
+            const note = (cols.length >= 7 ? cols[6] : (cols[4] || '')).trim();
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !(amount > 0)) continue;
+            imported.push({ id: 'imp_' + Date.now() + '_' + i, date, category, amount, paymentMethod, paidBy, settled, note, createdAt: Date.now() + i });
+          }
+          if (!imported.length) { showToast('No valid entries found in CSV'); return; }
+          state.expenses = imported;
+          state.isSampleData = false;
+          state.lastBackupAt = Date.now();
+          saveState();
+          renderAll();
+          showToast(`Imported ${imported.length} entries from CSV`);
+        } catch (err) {
+          showToast('Could not parse CSV file');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* =========================================================
+       13. EVENT LISTENERS & INIT
+       ========================================================= */
+    function setDateFilterPreset(preset) {
+      const fromEl = document.getElementById('filter-from');
+      const toEl = document.getElementById('filter-to');
+      if (preset === 'this_month') {
+        const b = getMonthBounds(0);
+        fromEl.value = b.startStr;
+        toEl.value = b.endStr;
+      } else if (preset === 'last_month') {
+        const b = getMonthBounds(-1);
+        fromEl.value = b.startStr;
+        toEl.value = b.endStr;
+      } else {
+        fromEl.value = '';
+        toEl.value = '';
+      }
+      document.querySelectorAll('#view-expenses .quick-pills .pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.range === preset);
+      });
+      renderExpensesList();
+    }
+
+    function init() {
+      initCategoryUI();
+      setDateFilterPreset('this_month');
+      renderAll();
+      requestDurableStorage();
+
+      // Hydrate from IndexedDB if available (survives even if localStorage was cleared)
+      loadFromIndexedDB().then(idbState => {
+        if (idbState && Array.isArray(idbState.expenses)) {
+          const hasLocal = (() => { try { return Boolean(localStorage.getItem(STORAGE_KEY)); } catch (e) { return false; } })();
+          if (!hasLocal || !idbState.isSampleData) {
+            state = {
+              ...state,
+              ...idbState
+            };
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+            renderAll();
+          }
+        } else {
+          saveToIndexedDB(state);
+        }
+      });
+
+      // Listen for system theme changes when set to 'system'
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+          if (state.theme === 'system') applyTheme();
+        });
+      }
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => switchView(btn.dataset.view));
+      });
+
+      document.getElementById('btn-quick-add').addEventListener('click', () => openAddExpenseModal('digital'));
+      document.getElementById('btn-cash-spend').addEventListener('click', () => openAddExpenseModal('cash'));
+      document.getElementById('btn-cash-withdraw').addEventListener('click', () => openCashModal('withdraw'));
+      document.getElementById('btn-cash-set').addEventListener('click', () => openCashModal('set'));
+      document.getElementById('btn-view-all-tx').addEventListener('click', () => switchView('expenses'));
+      document.getElementById('btn-edit-limit-inline').addEventListener('click', () => switchView('settings'));
+
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.dataset.close));
+      });
+      document.querySelectorAll('.modal-backdrop').forEach(bd => {
+        bd.addEventListener('click', e => {
+          if (e.target === bd) bd.classList.remove('open');
+        });
+      });
+
+      // Expense modal controls
+      document.getElementById('exp-cat-chips').addEventListener('click', e => {
+        const chip = e.target.closest('.cat-chip');
+        if (chip) setExpenseCategory(chip.dataset.cat);
+      });
+      document.getElementById('pay-digital').addEventListener('click', () => setPayMethod('digital'));
+      document.getElementById('pay-cash').addEventListener('click', () => setPayMethod('cash'));
+      document.getElementById('paidby-me').addEventListener('click', () => setPaidByMode('me'));
+      document.getElementById('paidby-other').addEventListener('click', () => setPaidByMode('other'));
+      document.getElementById('saved-payers-list').addEventListener('click', e => {
+        const pill = e.target.closest('[data-payer-pick]');
+        if (pill) document.getElementById('exp-payer-name').value = pill.dataset.payerPick;
+      });
+
+      document.getElementById('form-expense').addEventListener('submit', e => {
+        e.preventDefault();
+        const id = document.getElementById('exp-id').value;
+        const amount = Number(document.getElementById('exp-amount').value);
+        const date = document.getElementById('exp-date').value;
+        const note = document.getElementById('exp-note').value.trim();
+        if (!(amount > 0) || !date) return;
+
+        let paidBy = 'me';
+        if (selectedPaidByMode === 'other') {
+          paidBy = document.getElementById('exp-payer-name').value.trim() || 'Someone else';
+          if (paidBy !== 'Someone else' && !state.savedPayers.includes(paidBy)) {
+            state.savedPayers.unshift(paidBy);
+            state.savedPayers = state.savedPayers.slice(0, 6);
+          }
+        }
+
+        const effectivePayMethod = paidBy === 'me' ? selectedPayMethod : 'digital';
+        state.lastCategory = selectedCategory;
+
+        if (id) {
+          const existing = state.expenses.find(x => x.id === id);
+          if (existing) {
+            if ((!existing.paidBy || existing.paidBy === 'me') && existing.paymentMethod === 'cash') {
+              state.cashBalance += Number(existing.amount) || 0;
+            }
+            if (paidBy === 'me' && effectivePayMethod === 'cash') {
+              state.cashBalance = Math.max(0, state.cashBalance - amount);
+            }
+            existing.amount = amount;
+            existing.category = selectedCategory;
+            existing.date = date;
+            existing.note = note;
+            existing.paymentMethod = effectivePayMethod;
+            existing.paidBy = paidBy;
+            if (paidBy === 'me') existing.settled = true;
+          }
+          showToast('Expense updated');
+        } else {
+          if (paidBy === 'me' && effectivePayMethod === 'cash') {
+            state.cashBalance = Math.max(0, state.cashBalance - amount);
+            document.getElementById('cash-last-action').textContent = `Last cash spend: ${formatINR(amount)}`;
+          }
+          state.expenses.push({
+            id: 'exp_' + Date.now(),
+            amount,
+            category: selectedCategory,
+            date,
+            note,
+            paymentMethod: effectivePayMethod,
+            paidBy,
+            settled: paidBy === 'me',
+            createdAt: Date.now()
+          });
+          showToast(paidBy !== 'me' ? `Saved (paid by ${paidBy})` : (effectivePayMethod === 'cash' ? 'Cash expense saved' : 'Expense saved'));
+        }
+
+        saveState();
+        closeModal('modal-expense');
+        renderAll();
+      });
+
+      // Cash modal submit
+      document.getElementById('form-cash').addEventListener('submit', e => {
+        e.preventDefault();
+        const type = document.getElementById('cash-action-type').value;
+        const amount = Number(document.getElementById('cash-amount').value);
+        if (isNaN(amount) || amount < 0) return;
+
+        if (type === 'withdraw') {
+          if (amount <= 0) return;
+          state.cashBalance += amount;
+          document.getElementById('cash-last-action').textContent = `Withdrew ${formatINR(amount)}`;
+          showToast(`Added ${formatINR(amount)} to cash`);
+        } else {
+          state.cashBalance = amount;
+          document.getElementById('cash-last-action').textContent = 'Balance updated';
+          showToast('Cash balance updated');
+        }
+        saveState();
+        closeModal('modal-cash');
+        renderAll();
+      });
+
+      // Edit / Delete delegation
+      ['dash-recent-list', 'all-expenses-list'].forEach(listId => {
+        document.getElementById(listId).addEventListener('click', e => {
+          const btn = e.target.closest('button[data-action]');
+          if (!btn) return;
+          if (btn.dataset.action === 'edit') openEditExpenseModal(btn.dataset.id);
+          if (btn.dataset.action === 'delete') deleteExpense(btn.dataset.id);
+        });
+      });
+
+      // Owed / Settled view
+      document.querySelectorAll('[data-owed-filter]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          owedFilter = btn.dataset.owedFilter;
+          document.querySelectorAll('[data-owed-filter]').forEach(b => b.classList.toggle('active', b.dataset.owedFilter === owedFilter));
+          renderOwedView();
+        });
+      });
+      document.getElementById('owed-list').addEventListener('click', e => {
+        const btn = e.target.closest('[data-toggle-settled]');
+        if (!btn) return;
+        const item = state.expenses.find(x => x.id === btn.dataset.toggleSettled);
+        if (item) {
+          item.settled = !item.settled;
+          saveState();
+          renderAll();
+          showToast(item.settled ? 'Marked as settled' : 'Marked as owed');
+        }
+      });
+
+      // Confirm modal
+      document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+        closeModal('modal-confirm');
+        if (typeof confirmCallback === 'function') {
+          const cb = confirmCallback;
+          confirmCallback = null;
+          cb();
+        }
+      });
+
+      // Filters
+      document.querySelectorAll('#view-expenses .quick-pills .pill').forEach(p => {
+        p.addEventListener('click', () => setDateFilterPreset(p.dataset.range));
+      });
+      ['filter-from', 'filter-to', 'filter-category'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => {
+          if (id !== 'filter-category') {
+            document.querySelectorAll('#view-expenses .quick-pills .pill').forEach(p => p.classList.remove('active'));
+          }
+          renderExpensesList();
+        });
+      });
+      document.getElementById('btn-reset-filters').addEventListener('click', () => {
+        document.getElementById('filter-category').value = 'All';
+        setDateFilterPreset('this_month');
+      });
+
+      // Settings: Theme, Budget Limit, Count Others
+      document.getElementById('theme-pills').addEventListener('click', e => {
+        const btn = e.target.closest('[data-theme-choice]');
+        if (!btn) return;
+        state.theme = btn.dataset.themeChoice;
+        saveState();
+        applyTheme();
+        showToast(`Theme: ${state.theme}`);
+      });
+
+      document.getElementById('btn-save-limit').addEventListener('click', () => {
+        const val = Number(document.getElementById('setting-budget-limit').value);
+        if (!(val > 0)) { showToast('Enter a valid limit'); return; }
+        state.budgetLimit = val;
+        saveState();
+        renderAll();
+        showToast(`Monthly limit set to ${formatINR(val)}`);
+      });
+
+      document.getElementById('setting-count-others').addEventListener('change', e => {
+        state.countOthersInLimit = e.target.checked;
+        saveState();
+        renderAll();
+        showToast(state.countOthersInLimit ? 'Others counted in limit' : 'Others excluded from limit');
+      });
+
+      // Export / Import & Backup Banner
+      document.getElementById('btn-export-json').addEventListener('click', exportJSON);
+      document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
+      document.getElementById('btn-banner-backup').addEventListener('click', exportJSON);
+      document.getElementById('input-import-file').addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) importBackupFile(file);
+        e.target.value = '';
+      });
+
+      // Clear / Sample Data
+      function clearAllDataFlow() {
+        askConfirm('Clear All Data', 'Remove all expenses and reset cash balance to ₹0?', () => {
+          state.expenses = [];
+          state.cashBalance = 0;
+          state.isSampleData = false;
+          state.firstUsedAt = Date.now();
+          saveState();
+          renderAll();
+          showToast('All data cleared');
+        });
+      }
+
+      document.getElementById('btn-clear-all').addEventListener('click', clearAllDataFlow);
+      document.getElementById('btn-banner-clear').addEventListener('click', clearAllDataFlow);
+      document.getElementById('btn-load-sample').addEventListener('click', () => {
+        askConfirm('Load Sample Data', 'Replace current entries with sample entries?', () => {
+          const currentTheme = state.theme;
+          state = buildSampleState();
+          state.theme = currentTheme;
+          saveState();
+          renderAll();
+          showToast('Sample data loaded');
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
