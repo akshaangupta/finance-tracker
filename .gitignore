@@ -1,0 +1,9 @@
+# Sensitive / local / backup files
+*.csv
+*backup*.json
+.env
+.env.*
+local-data/
+.DS_Store
+# Uncomment the next line if you prefer entering Supabase keys in the app UI instead of committing config.js
+# config.js
